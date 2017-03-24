@@ -150,13 +150,9 @@ class Walker(DatagramProtocol):
         conn  = sqlite3.connect('load_balancing.db')
         cur =  conn.cursor()
         sql = ''' UPDATE visit
-                  SET min1 = ? ,
-                  min2 = ? ,
-                  min3 = ? ,
-                  min4 = ? ,
-                  min5 = ? 
+                  SET visited_count = ? 
                   WHERE walker = ?'''
-        data = (self.visited_count,self.visited_count,self.visited_count,self.visited_count,self.visited_count,self.lan_port)
+        data = (self.visited_count,self.lan_port)
         cur.execute(sql,data)
         conn.commit()
         conn.close()
@@ -206,18 +202,7 @@ class Walker(DatagramProtocol):
         signiture = self.crypto.create_signature(self.my_key, packet)
         #print ("the signiture length is: "+str(len(signiture)))
         packet = packet + signiture
-        #print repr(signiture)
-        #message = Message.introduction_request()
-        #message.destination_addr = destination_address
-        #message.sender_lan_addr = source_lan_address
-        #message.sender_wan_addr = source_wan_address
-        #message.identifier = identifier
-        #message.mid = self.my_mid
-        #message.global_time = now
-        #message.signiture = signiture
-        #message.message_type = 246
-        #message.prefix = self.prefix
-        #message.packet = packet
+
         self.visited_count= self.visited_count+1
 
         message=Message.message(destination_address=destination_address,source_lan_address=source_lan_address,source_wan_address=source_wan_address,identifier=identifier,
@@ -240,19 +225,6 @@ class Walker(DatagramProtocol):
         signiture = self.crypto.create_signature(self.my_key, packet)
         packet = packet + signiture
 
-        #message = Message.introduction_response()
-        #message.destination_addr = destination_address
-        #message.sender_lan_addr = source_lan_address
-        #message.sender_wan_addr = source_wan_address
-        #message.lan_introducted_addr = lan_introduction_address
-        #message.wan_introducted_addr = wan_introduction_address
-        #message.identifier = identifier
-        #message.mid = self.my_mid
-        #message.global_time = now
-        #message.signiture = signiture
-        #message.message_type = 246
-        #message.prefix = self.prefix
-        #message.packet = packet
 
         message = Message.message(destination_address=destination_address,source_lan_address=source_lan_address,source_wan_address=source_wan_address,lan_introduction_address=lan_introduction_address,
                                   wan_introduction_address=wan_introduction_address,identifier=identifier,mid=self.mid,global_time=now,signiture=signiture,message_type=245,prefix=self.prefix,packet=packet)
@@ -273,16 +245,6 @@ class Walker(DatagramProtocol):
         signiture =""
         packet = packet+signiture
 
-        #message = Message.puncture_request()
-        #message.lan_walker_addr = lan_walker_addr
-        #message.wan_walker_addr = wan_walker_addr
-        #message.identifier = identifier
-        #message.mid = self.my_mid
-        #message.global_time = now
-        #message.signiture = signiture
-        #message.message_type = 250
-        #message.prefix = self.prefix
-        #message.packet = packet
 
         message=Message.message(lan_walker_address=lan_walker_address,wan_walker_address=wan_walker_address,identifier=identifier,mid=self.mid,global_time=now,
                                 signiture=signiture,message_type=250,prefix=self.prefix,packet=packet)
@@ -305,16 +267,6 @@ class Walker(DatagramProtocol):
         signiture = self.crypto.create_signature(self.my_key, packet)
         packet = packet + signiture
 
-        #message = Message.puncture()
-        #message.sender_lan_addr = source_lan_address
-        #message.sender_wan_addr = source_wan_address
-        #message.identifier = identifier
-        #message.mid = self.my_mid
-        #message.global_time = now
-        #message.signiture = signiture
-        #message.message_type = 250
-        #message.prefix = self.prefix
-        #message.packet = packet
 
         message = Message.message(source_lan_address=source_lan_address,source_wan_address=source_wan_address,identifier=identifier,
                                   mid=self.mid,global_time=now,signiture=signiture,message_type=249,prefix=self.prefix,packet=packet)
@@ -328,10 +280,7 @@ class Walker(DatagramProtocol):
         #regardless of community-version
         my_public_key = self.my_public_key
         container.extend((self._struct_H.pack(len(my_public_key)), my_public_key))
-        #now = int(time())
-        #global_time = (self._global_time,0)
-        #print "global time tuple is: "+str(global_time)
-        #print type(global_time)
+
         now = self._struct_Q.pack(self._global_time)
         container.append(now)
         data=()
@@ -341,14 +290,6 @@ class Walker(DatagramProtocol):
         signiture = self.crypto.create_signature(self.my_key, packet)
         packet = packet+signiture
 
-        #message = Message.identity()
-        #message.identifier = identifier
-        #message.mid = self.my_mid
-        #message.global_time = now
-        #message.signiture = signiture
-        #message.message_type = 248
-        #message.prefix = self.prefix
-        #message.packet = packet
 
         message=Message.message(identifier=identifier,mid=self.mid,global_time=now,signiture=signiture,message_type=248,prefix=self.prefix,packet=packet)
         return message
@@ -479,17 +420,6 @@ class Walker(DatagramProtocol):
         signiture = packet[offset:]
         prefix = packet[0:offset]
 
-        #message = Message.introduction_request()
-        #message.destination_addr = destination_address
-        #message.sender_lan_addr = source_lan_address
-        #message.sender_wan_addr = source_wan_address
-        #message.identifier = identifier
-        #message.mid = member_id
-        #message.global_time = global_time
-        #message.signiture = signiture
-        #message.prefix = self.prefix
-        #message.packet = packet
-
         message=Message.message(message_type=246,destination_address=destination_address,source_lan_address=source_lan_address,source_wan_address=source_wan_address,identifier=identifier,
                                 mid=self.mid,global_time=global_time,signiture=signiture,prefix=prefix,packet=packet)
         return message
@@ -547,20 +477,6 @@ class Walker(DatagramProtocol):
         signiture = packet[offset:]
         prefix = packet[0:offset]
 
-        #message = Message.introduction_response()
-        #message.destination_addr = destination_address
-        #message.sender_lan_addr = source_lan_address
-        #message.sender_wan_addr = source_wan_address
-        #message.lan_introducted_addr=lan_introduction_address
-        #message.wan_introducted_addr = wan_introduction_address
-        #message.lan_introduction_address = lan_introduction_address
-        #message.wan_introduction_address = wan_introduction_address
-        #message.identifier = identifier
-        #message.mid = member_id
-        #message.global_time = global_time
-        #message.signiture = signiture
-        #message.prefix = self.prefix
-        #message.packet = packet
 
         message=Message.message(message_type=245,destination_address=destination_address,source_lan_address=source_lan_address,source_wan_address=source_wan_address,lan_introduction_address=lan_introduction_address,
                                 wan_introduction_address=wan_introduction_address,identifier=identifier,mid=member_id,global_time=global_time,signiture=signiture,prefix=self.prefix,packet=packet)
@@ -610,15 +526,6 @@ class Walker(DatagramProtocol):
         signiture = packet[offset:]
         prefix = packet[0:offset]
 
-        #message = Message.puncture_request()
-
-        #message.lan_walker_addr = lan_walker_address
-        #message.wan_walker_addr = wan_walker_address
-        #message.identifier = identifier
-        #message.global_time = global_time
-        #message.signiture = signiture
-        #message.prefix = self.prefix
-        #message.packet = packet
 
         message=Message.message(message_type=250,lan_walker_address=lan_walker_address,wan_walker_address=wan_walker_address,identifier=identifier,
                                 global_time=global_time,signiture=signiture,prefix=self.prefix,packet=packet)
@@ -764,7 +671,4 @@ class Walker(DatagramProtocol):
 
 if __name__ == "__main__":
     walker = Walker(port=25000)
-    #walker.transport.write("hahahahaha222233333",("8.8.8.8",8))
-    #walker.listening_port=walker.reactor.listenUDP(walker.lan_port, walker)
-    #walker.reactor.run()
     walker.run()
