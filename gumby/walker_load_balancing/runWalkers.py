@@ -19,7 +19,7 @@ conn = sqlite3.connect('load_balancing.db')
 
 c = conn.cursor()
 c.execute('''CREATE TABLE visit
-             (walker text, min1 INTEGER, min2 INTEGER, min3 INTEGER, min4 INTEGER, min5 INTEGER)''')
+             (walker text, visited_count INTEGER)''')
 conn.commit()
 
 
@@ -40,8 +40,8 @@ while(i<NUM_WALKER):
 	print "this is walker "+str(i)
 	walker = Walker(25000+i)
 	walker_list.append(walker)
-	entry = [(str(25000+i),0,0,0,0,0)]
-	c.executemany("INSERT INTO visit VALUES (?,?,?,?,?,?)",entry)
+	entry = [(str(25000+i),0)]
+	c.executemany("INSERT INTO visit VALUES (?,?)",entry)
 	conn.commit()
 	i=i+1
 
