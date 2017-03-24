@@ -13,7 +13,7 @@ else:
 
 conn = sqlite3.connect('load_balancing.db')
 c = conn.cursor()
-c.execute("select min1,min2 from visit")
+c.execute("select visited_count from visit")
 list_visit = c.fetchall()
 
 list_min1=[]
